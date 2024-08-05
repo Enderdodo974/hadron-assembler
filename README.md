@@ -30,7 +30,7 @@ Clone the git repository or download the source code as a `.zip`, and extract it
 You can clone the repository with the following command:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Enderdodo974/hadron-assembler.git
 ```
 
 ## Usage
@@ -47,7 +47,7 @@ The command line syntax and arguments can be found in the documentation.
 
 | Argument      | Description                          |
 |---------------|--------------------------------------|
-| `INPUT_FILES` | The input file or files to assemble. |
+| `file` | The input file or files to assemble. |
 
 ### Optional arguments
 
@@ -67,11 +67,11 @@ The assembly language syntax is detailed in the documentation.
 
 ## Progress
 
-- [ ] Set-up the project
-- [ ] Create the CLI
-- [ ] Preprocess source code
-- [ ] Parse source code to tokens
+- [x] Set-up the project
+- [x] Create the CLI
+- [x] Parse source code to tokens
 - [ ] Construct AST from tokens
+- [ ] Preprocess source code
 - [ ] Resolve labels
 - [ ] Read ISA from a template (JSON/dict)
 - [ ] Translate to machine code
