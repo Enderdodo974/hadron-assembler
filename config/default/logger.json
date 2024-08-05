@@ -12,7 +12,25 @@
         },
         "full": {
             "style": "{",
-            "format": "[{asctime}][{levelname:^8}] {filename}:{lineno}: {funcName}: {message}"
+            "format": "[{asctime}][{levelname:^8}] {name} - {filename}:{lineno}: {message}"
+        }
+    },
+    "filters": {
+        "WARNING_PARSING": {
+            "name": "WarningParsingFilter"
+        },
+        "WARNING_PREPROCESSING": {
+            "name": "WarningPreprocessingFilter"
+        },
+        "WARNING_LABELS": {
+            "name": "WarningLabelsFilter"
+        },
+        "WARNING_CODEGEN": {
+            "name": "WarningCodeGenFilter"
+        },
+        "WARNING_MISC": {
+            "name": "WarningMiscFilter",
+            "()": "src.util.WarningFilter"
         }
     },
     "handlers": {
@@ -23,16 +41,13 @@
             "stream": "ext://sys.stdout"
         },
         "stdout": {
-            "level": "NOTSET",
+            "level": "DEBUG",
             "formatter": "simple",
             "class": "logging.StreamHandler",
-            "stream": "ext://sys.stdout"
-        },
-        "stderr": {
-            "level": "WARNING",
-            "formatter": "simple",
-            "class": "logging.StreamHandler",
-            "stream": "ext://sys.stderr"
+            "stream": "ext://sys.stdout",
+            "filters": [
+                "WARNING_MISC"
+            ]
         },
         "log_file": {
             "level": "DEBUG",
@@ -56,16 +71,36 @@
     "loggers": {
         "root": {
             "handlers": [],
-            "level": "WARNING",
+            "level": "NOTSET",
             "propagate": false
         },
         "assembler": {
             "handlers": [
-                "stdout",
-                "log_file"
+                "log_file",
+                "stdout"
             ],
-            "level": "NOTSET",
+            "level": "DEBUG",
             "propagate": false
+        },
+        "assembler.parser": {
+            "handlers": [],
+            "level": "DEBUG",
+            "propagate": true
+        },
+        "assembler.preproc": {
+            "handlers": [],
+            "level": "DEBUG",
+            "propagate": true
+        },
+        "assembler.labels": {
+            "handlers": [],
+            "level": "DEBUG",
+            "propagate": true
+        },
+        "assembler.codegen": {
+            "handlers": [],
+            "level": "DEBUG",
+            "propagate": true
         }
     }
 }

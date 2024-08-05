@@ -16,16 +16,26 @@ import sys
 import pathlib
 import argparse
 import logging
+from json import load
 
 # ------------------------------------ #
 # Files imports
-from src.logger import setup_logging
 from src.tokenizer import HASMTokenizer
 from src.argument_parser import setup_CLI_args
+from src.util import CustomArgumentParser
 
 # ------------------------------------ #
 # Functions
 
+def setup_logging(config_file: pathlib.Path) -> logging.Logger:
+    
+    with open(config_file) as f:
+        config = load(f)
+    
+    logging.config.dictConfig(config)
+    logger = logging.getLogger('assembler')
+    
+    return logger
 # Assemble function
 def assemble() -> ...:
     pass
@@ -37,12 +47,16 @@ if __name__ == '__main__':
     # Logging configuration
     loggingConfigFile = pathlib.Path('config/default/logger.json')
     logger = setup_logging(loggingConfigFile)
-    logger.debug(f'Logging set-up complete.')
+    # Get the handlers by name; that way it is easier to access them
+    handlers = {handler.name: handler for handler in logger.handlers}
+    # Until CLI arguments are parsed, set the level on stdout to warning only
+    handlers['stdout'].setLevel(logging.WARNING)
+    logger.debug('Logging set-up completed.')
     
     # Command Line arguments configuration
-    argParser = argparse.ArgumentParser(
-        prog='Hadron Assembler',
-        description='Assemble Hadron Assembly Language source file(s)\
+    argParser = CustomArgumentParser(
+        prog='hadron-assembler.py',
+        description='Assemble HASM (Hadron Assembly Language) source file(s)\
         into machine code and/or Minecraft schematics.',
         epilog='For more information, see the documentation at \
         https://github.com/Enderdodo974/hadron-assembler',
@@ -62,13 +76,18 @@ if __name__ == '__main__':
     
     # Logging level
     if arguments.quiet:
-        logger.setLevel(logging.ERROR)
+        handlers['stdout'].setLevel(logging.ERROR)
     if arguments.verbose == 1:
-        logger.setLevel(logging.INFO)
-    elif arguments.verbose >= 1:
-        logger.setLevel(logging.DEBUG)
-    if arguments.debug:
-        logger.setLevel(logging.DEBUG)
+        handlers['stdout'].setLevel(logging.INFO)
+    if arguments.verbose > 1 or arguments.debug:
+        handlers['stdout'].setLevel(logging.DEBUG)
     
     logger.debug('Parsed CLI arguments:')
-    logger.debug(arguments)
+    logger.debug(f'Debug: {arguments.debug}')
+    logger.debug(f'Verbose level: {arguments.verbose}')
+    logger.debug(f'Quiet: {arguments.quiet}')
+    logger.debug(f'Input file(s): {arguments.file}')
+    logger.debug(f'Output file: {arguments.output_file}')
+    logger.debug(f'Schematic file: {arguments.schem_file}')
+
+    # TODO: instanciate the tokenizer
