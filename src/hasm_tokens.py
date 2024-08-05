@@ -171,7 +171,7 @@ def t_STRING_LITERAL(t):
     # update line count (in case of multi-lines string)
     newlinesCount = t.value.count('\n')
     if newlinesCount:
-        # TODO: Warning
+        # TODO: Warning about multiline strings
         t.lexer.lineno += newlinesCount
     t.value = t.value.replace('\\\n', '')   # remove backslash followed by \n
     t.value = t.value.replace('\\\"', '"')  # remove backslash before quotes
@@ -191,3 +191,4 @@ def t_CHAR_LITERAL(t):
 # Uncaught Errors handling
 def t_error(t):
     print(f"Uncaught Error: Illegal sequence {t.value}")
+    # TODO: handle them

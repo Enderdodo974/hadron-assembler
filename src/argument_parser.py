@@ -75,20 +75,22 @@ def setup_CLI_args(arg_parser: ArgumentParser) -> ...:
         'file',
         help='Input file to assemble. Has to be in a standard text format file.',
         type=pathlib.Path,
-        nargs='+'
+        nargs='+',
     )
     fileGroup.add_argument(
         '-o', '--output',
         help='Output file name to write the machine code to.\
         Defaults to `out/a.out`',
         type=pathlib.Path,
-        default=pathlib.Path('out/a.out')
+        default=pathlib.Path('out/a.out'),
+        dest='output_file'
     )
     fileGroup.add_argument(
         '-s', '--schematic',
         help='Write the output machine code as a Minecraft schematic file.',
         type=pathlib.Path,
-        default=None
+        default=None,
+        dest='schem_file'
     )
 
     # -------------------------------------------------------- #
