@@ -31,7 +31,7 @@ class ColoredFormatter(logging.Formatter):
     # Logging format : [TIME] - FILE:LINE: LEVEL: MESSAGE
     _format = "[%(asctime)s] - %(filename)s:%(lineno)d: {COL}%(levelname)s" \
         + RESET + ": %(message)s"
-    
+
     FORMATS = {
         logging.DEBUG:      GREY,
         logging.INFO:       BOLD_BLUE,
@@ -39,11 +39,47 @@ class ColoredFormatter(logging.Formatter):
         logging.ERROR:      RED,
         logging.CRITICAL:   BOLD_RED,
     }
-    
+
     def format(self, record) -> str:
+
+        # Lower the level name and replace critical with fatal
+        if record.levelno == logging.CRITICAL:
+            record.levelname = 'FATAL'
+        record.levelname = record.levelname.lower()
+
+        # If source file name and line are available, use them
+        source_name = record.__dict__.get('source_name', None)
+        log_fmt = self._format
+        if source_name is not None:
+            log_fmt = self._format.replace('%(filename)s', '%(source_name)s')
+            log_fmt = log_fmt.replace('%(lineno)d', '%(source_line)d')
+
+        # Colorize the level name
         color = self.FORMATS.get(record.levelno)
-        log_fmt = self._format.replace("{COL}", color)
+        log_fmt = log_fmt.replace("{COL}", color)
+
+        # Format the message
+        # TODO: avoid instancing a new Formatter for this
         formatter = logging.Formatter(log_fmt)
+        return formatter.format(record)
+
+# ------------------------------------ #
+# Full formatter for log files
+class FullFormatter(logging.Formatter):
+
+    _format = '[{asctime}][{levelname:^8}]({filename}:{lineno}) {source_name}:{source_line}: {message}'
+
+    def format(self, record: logging.LogRecord) -> str:
+
+        # Remove the source file name and line number if not available
+        source_name = record.__dict__.get('source_name', None)
+        log_fmt = self._format
+        if source_name is None:
+            log_fmt = self._format.replace('{source_name}:{source_line}: ', '')
+
+        # Format the message
+        # TODO: avoid instancing a new Formatter for this
+        formatter = logging.Formatter(log_fmt, style='{')
         return formatter.format(record)
 
 # ------------------------------------ #

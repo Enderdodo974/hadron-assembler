@@ -11,11 +11,10 @@
 
 # ------------------------------------ #
 # Libraries imports
-import os
-import sys
 import pathlib
 import argparse
 import logging
+import logging.config
 from json import load
 
 # ------------------------------------ #
@@ -89,5 +88,8 @@ if __name__ == '__main__':
     logger.debug(f'Input file(s): {arguments.file}')
     logger.debug(f'Output file: {arguments.output_file}')
     logger.debug(f'Schematic file: {arguments.schem_file}')
+
+    logger.info('Completed set-up. Now starting compilation for files:')
+    logger.info(arguments.file)
 
     # TODO: instanciate the tokenizer

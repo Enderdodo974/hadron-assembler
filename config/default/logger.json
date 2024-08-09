@@ -12,22 +12,10 @@
         },
         "full": {
             "style": "{",
-            "format": "[{asctime}][{levelname:^8}] {name} - {filename}:{lineno}: {message}"
+            "class": "src.util.FullFormatter"
         }
     },
     "filters": {
-        "WARNING_PARSING": {
-            "name": "WarningParsingFilter"
-        },
-        "WARNING_PREPROCESSING": {
-            "name": "WarningPreprocessingFilter"
-        },
-        "WARNING_LABELS": {
-            "name": "WarningLabelsFilter"
-        },
-        "WARNING_CODEGEN": {
-            "name": "WarningCodeGenFilter"
-        },
         "WARNING_MISC": {
             "name": "WarningMiscFilter",
             "()": "src.util.WarningFilter"
