@@ -22,6 +22,7 @@ from json import load
 from src.tokenizer import HASMTokenizer
 from src.argument_parser import setup_CLI_args
 from src.util import CustomArgumentParser
+from src.exceptions import _exit
 
 # ------------------------------------ #
 # Functions
@@ -32,12 +33,17 @@ def setup_logging(config_file: pathlib.Path) -> logging.Logger:
         config = load(f)
     
     logging.config.dictConfig(config)
-    logger = logging.getLogger('assembler')
-    
-    return logger
+    return logging.getLogger('assembler')
+
 # Assemble function
-def assemble() -> ...:
-    pass
+def assemble(file: pathlib.Path, args: argparse.Namespace) -> ...:
+    
+    # ================================================== #
+    # 1. Tokenize the source code
+    
+    tokenizer = HASMTokenizer(args.debug)
+    tokens = tokenizer.tokenize(file)
+    
 
 # ------------------------------------ #
 # Program entry point
@@ -48,14 +54,14 @@ if __name__ == '__main__':
     logger = setup_logging(loggingConfigFile)
     # Get the handlers by name; that way it is easier to access them
     handlers = {handler.name: handler for handler in logger.handlers}
-    # Until CLI arguments are parsed, set the level on stdout to warning only
+    # Until CLI arguments are parsed, set the level on stdout to warnings only
     handlers['stdout'].setLevel(logging.WARNING)
-    logger.debug('Logging set-up completed.')
+    logger.debug('logging set-up completed.')
     
     # Command Line arguments configuration
     argParser = CustomArgumentParser(
         prog='hadron-assembler.py',
-        description='Assemble HASM (Hadron Assembly Language) source file(s)\
+        description='Assemble HASM (Hadron Assembly Language) source files\
         into machine code and/or Minecraft schematics.',
         epilog='For more information, see the documentation at \
         https://github.com/Enderdodo974/hadron-assembler',
@@ -71,7 +77,7 @@ if __name__ == '__main__':
         arguments = argParser.parse_args()
     except argparse.ArgumentError as e:
         logger.critical(e)
-        exit(-1)
+        _exit(-1)
     
     # Logging level
     if arguments.quiet:
@@ -81,15 +87,28 @@ if __name__ == '__main__':
     if arguments.verbose > 1 or arguments.debug:
         handlers['stdout'].setLevel(logging.DEBUG)
     
-    logger.debug('Parsed CLI arguments:')
-    logger.debug(f'Debug: {arguments.debug}')
-    logger.debug(f'Verbose level: {arguments.verbose}')
-    logger.debug(f'Quiet: {arguments.quiet}')
-    logger.debug(f'Input file(s): {arguments.file}')
-    logger.debug(f'Output file: {arguments.output_file}')
-    logger.debug(f'Schematic file: {arguments.schem_file}')
+    # Warning flags for the logger
+    if arguments.warnings is None:
+        logger.warnings = []
+    else:
+        logger.warnings = arguments.warnings
+    
+    # Delete handlers dictionary
+    del handlers
+    
+    logger.info('parsed CLI arguments:')
+    logger.info(f'debug: {arguments.debug}')
+    logger.info(f'verbose level: {arguments.verbose}')
+    logger.info(f'quiet: {arguments.quiet}')
+    logger.info(f'input file(s): {arguments.file}')
+    logger.info(f'output file: {arguments.output_file}')
+    logger.info(f'schematic file: {arguments.schem_file}')
 
-    logger.info('Completed set-up. Now starting compilation for files:')
-    logger.info(arguments.file)
+    logger.info("completed set-up.")
+    logger.info(f"starting compilation for file {arguments.file.absolute()}")
 
-    # TODO: instanciate the tokenizer
+    # Assemble the source file
+    assemble(arguments.file, arguments)
+
+    # End compilation
+    _exit(0)

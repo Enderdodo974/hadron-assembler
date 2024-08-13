@@ -15,6 +15,10 @@ from argparse import ArgumentParser, ArgumentError
 from typing import NoReturn
 
 # -------------------------------------------------------- #
+# File imports
+import src.constants as c
+
+# -------------------------------------------------------- #
 # Classes
 
 # ------------------------------------ #
@@ -101,30 +105,48 @@ class WarningFilter(logging.Filter):
     
     def filter(self, record: logging.LogRecord) -> bool:
         
-        # # Skip everything other than warnings
-        # if not record.levelno == logging.WARNING:
-        #     return True
+        # Skip everything other than warnings
+        if not record.levelno == logging.WARNING:
+            return True
         
-        # # Get the warning ID
-        # warning = record.__dict__.get('warn', 0)
+        # Get the warning ID
+        warnID = record.__dict__.get('warnID', 0)
         
-        # # Get the global list of warnings
-        # warnings = [2, 4, 9] # TODO find a way to access the global list
+        # Get the global list of warnings
+        warnings = logging.getLogger('assembler').warnings
         
-        # # If it should be treated as an error
-        # if warn_as_err:
-        #     record.levelno = logging.ERROR
-        #     record.levelname = 'ERROR'
+        # If it should be treated as an error
+        if c.WARNING_AS_ERRORS in warnings:
+            record.levelno = logging.ERROR
+            record.levelname = 'ERROR'
         
         # # If the -Wall flag is on
-        # if 1 in warnings:
-        #     return True
+        if c.WARNING_ALL in warnings:
+            return True
         
-        # # If the warning ID is in the global list
-        # if warning in warnings:
-        #     return True
+        # If the warning ID is in the global list
+        if warnID in warnings:
+            return True
         
         # # Otherwise, drop it
-        # return False
-        
-        return True
+        return False
+
+# -------------------------------------------------------- #
+# Functions
+
+# get_line(source: str, pos: int)
+# get the entire line in which pos is,
+# pos is the character position in the source
+# returns the line string and the position of pos in the line
+def get_line(source: str, pos: int) -> tuple[str, int]:
+    
+    assert 0 <= pos < len(source) #TODO: proper handling
+    
+    lineStart = source.rfind('\n', 0, pos) + 1
+    lineEnd   = source.find('\n', pos)
+    pos = pos - lineStart
+    
+    if lineEnd == -1:
+        return (source[lineStart:], pos)
+    
+    return (source[lineStart:lineEnd], pos)
