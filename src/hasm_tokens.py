@@ -9,7 +9,8 @@
 
 # ------------------------------------ #
 # File imports
-from src.constants import ESCAPE_CODES
+import src.constants as c
+from src.exceptions import ParserError, warn
 
 # ------------------------------------ #
 # Tokens
@@ -30,7 +31,7 @@ keywords = {
 # All tokens
 tokens = [
     # File tokens (end of file)
-    'EOF'
+    'EOF',
     
     # Comments
     'INLINE_COMMENT', 'BLOCK_COMMENT',
@@ -46,9 +47,9 @@ tokens = [
     'LE', 'EQ', 'GE',
     
     # Literals (identifier, integer, hex, octal, binary, float, string, char)
-    'IDENTIFIER', 'INT_LITERAL', 'HEX_LITERAL', 'OCT_LITERAL', 'BIN_LITERAL',
-    'FLOAT_LITERAL', 'STRING_LITERAL', 'CHAR_LITERAL',
-]
+    'IDENTIFIER', 'INST_IDENTIFIER', 'INT_LITERAL', 'HEX_LITERAL', 'OCT_LITERAL',
+    'BIN_LITERAL', 'FLOAT_LITERAL', 'STRING_LITERAL', 'CHAR_LITERAL',
+] + list(keywords.values())
 
 # Ignore whitespaces, commas and tabulations
 t_ignore = ', \t'
@@ -71,7 +72,19 @@ t_EQ           = r'=='
 t_GE           = r'>='
 
 # Identifiers
-t_IDENTIFIER   = r'(?<!\d)[A-Za-z_][A-Za-z0-9_]*'
+def t_IDENTIFIER(t):
+    r'(?<!\d)[A-Za-z_][A-Za-z0-9_]*'
+    
+    # Keywords look-up
+    tokenType = keywords.get(t.value, 'IDENTIFIER')
+    
+    # Instruction Identifier look-up
+    if tokenType == 'IDENTIFIER':
+        if t.value.lower() in c.ALL_INSTRUCTIONS:
+            tokenType = 'INST_IDENTIFIER'
+    
+    t.type = tokenType
+    return t
 
 # Newline
 def t_newline(t):
@@ -93,61 +106,45 @@ def t_BLOCK_COMMENT(t):
 # Hexadecimal constant
 def t_HEX_LITERAL(t):
     r'(?i)0x\w*'
-    t.value = t.value[2:].replace('_', '') # remove underscores
+    value = t.value[2:].replace('_', '') # remove underscores
     try:
-        t.value = int(t.value, 16)
+        t.value = int(value, 16)
     except ValueError:
-        raise SyntaxError(f'invalid hexadecimal literal')
-    except Exception:
-        raise Exception('Uncaught exception')
-    finally:
-        pass
-    
+        raise ParserError('Invalid hexadecimal literal', c.ERROR_INVALID_LITERAL)
+
     return t
 
 # Octal constant
 def t_OCT_LITERAL(t):
     r'(?i)0o\w*'
-    t.value = t.value[2:].replace('_', '') # remove underscores
+    value = t.value[2:].replace('_', '') # remove underscores
     try:
-        t.value = int(t.value, 8)
+        t.value = int(value, 8)
     except ValueError:
-        raise SyntaxError(f'invalid octal literal')
-    except Exception:
-        raise Exception('Uncaught exception')
-    finally:
-        pass
-    
+        raise ParserError('Invalid octal literal', c.ERROR_INVALID_LITERAL)
+
     return t
 
 # Binary constant
 def t_BIN_LITERAL(t):
     r'(?i)0b\w*'
-    t.value = t.value[2:].replace('_', '') # remove underscores
+    value = t.value[2:].replace('_', '') # remove underscores
     try:
-        t.value = int(t.value, 2)
+        t.value = int(value, 2)
     except ValueError:
-        raise SyntaxError(f'invalid binary literal')
-    except Exception:
-        raise Exception('Uncaught exception')
-    finally:
-        pass
-    
+        raise ParserError('Invalid binary literal', c.ERROR_INVALID_LITERAL)
+
     return t
 
 # Float constant
 def t_FLOAT_LITERAL(t):
     r'(?i)((?<!\w)\d\w*\.\w*[-\+]?\w*)|((?<!\w)\d\w*e[-\+]?\w+)|((?<!\w)\.\d\w*[-\+]?\w*)'
-    # sheesh the size of that regex
+    value = t.value.replace('_', '') # remove underscores
     try:
-        t.value = float(t.value)
+        t.value = float(value)
     except ValueError:
-        raise SyntaxError(f'invalid float literal')
-    except Exception:
-        raise Exception('Uncaught exception')
-    finally:
-        pass
-    
+        raise ParserError('Invalid float literal', c.ERROR_INVALID_LITERAL)
+
     return t
 
 # Integer constant
@@ -156,12 +153,8 @@ def t_INT_LITERAL(t):
     try:
         t.value = int(t.value)
     except ValueError:
-        raise SyntaxError(f'invalid integer literal')
-    except Exception:
-        raise Exception('Uncaught exception')
-    finally:
-        pass
-    
+        raise ParserError('Invalid integer literal', c.ERROR_INVALID_LITERAL)
+
     return t
 
 # String constant
@@ -171,12 +164,18 @@ def t_STRING_LITERAL(t):
     # update line count (in case of multi-lines string)
     newlinesCount = t.value.count('\n')
     if newlinesCount:
-        # TODO: Warning about multiline strings
+        warn(
+            logger=None,
+            message='String spanning over multiple lines',
+            warnID=c.WARNING_MULTILINE_STRING,
+            module='assembler.parser'
+        )
         t.lexer.lineno += newlinesCount
+    
     t.value = t.value.replace('\\\n', '')   # remove backslash followed by \n
     t.value = t.value.replace('\\\"', '"')  # remove backslash before quotes
-    for esc in ESCAPE_CODES:                # change escape codes to actual char
-        t.value = t.value.replace(esc, ESCAPE_CODES[esc])
+    for esc in c.ESCAPE_CODES:                # change escape codes to actual char
+        t.value = t.value.replace(esc, c.ESCAPE_CODES[esc])
     return t
 
 # Character constant
@@ -184,11 +183,11 @@ def t_CHAR_LITERAL(t):
     r'\'(?:(?:\\.)|[^\\\n])\''
     t.value = t.value[1:-1]
     t.value = t.value.replace('\\\'', '\'') # remove backslash before quote
-    for esc in ESCAPE_CODES:                # change escape codes to actual char
-        t.value = t.value.replace(esc, ESCAPE_CODES[esc])
+    for esc in c.ESCAPE_CODES:                # change escape codes to actual char
+        t.value = t.value.replace(esc, c.ESCAPE_CODES[esc])
     return t
 
 # Uncaught Errors handling
 def t_error(t):
-    print(f"Uncaught Error: Illegal sequence {t.value}")
     # TODO: handle them
+    raise ParserError('Illegal token')
