@@ -36,18 +36,18 @@ git clone https://github.com/Enderdodo974/hadron-assembler.git
 ## Usage
 
 ```bash
-python3 hadron-assembler.py [-h] [-o OUTPUT] [-s SCHEMATIC] [-v] [-q] [-d] [-V] INPUT_FILES...
+python3 hadron-assembler.py [-h] [-o OUTPUT] [-s SCHEMATIC] [-v] [-q] [-d] [-V] INPUT_FILE...
 ```
 
 ### Command line syntax
 
-The command line syntax and arguments can be found in the documentation.
+The command line syntax and arguments can be found [in the documentation](#documentation).
 
 ### Positional arguments
 
-| Argument      | Description                          |
-|---------------|--------------------------------------|
-| `file` | The input file or files to assemble. |
+| Argument | Description                 |
+|----------|-----------------------------|
+| `file`   | The input file to assemble. |
 
 ### Optional arguments
 
@@ -63,7 +63,7 @@ The command line syntax and arguments can be found in the documentation.
 
 This assembler uses a custom assembly language, called Hadron Assembly Language (HASM).
 The syntax is based on the URCL syntax, with some modifications.  
-The assembly language syntax is detailed in the documentation.
+The assembly language syntax is detailed [in the documentation](#documentation).
 
 ## Progress
 
@@ -94,7 +94,7 @@ The assembly language syntax is detailed in the documentation.
 
 ## Examples
 
-The script folder contains some example programs written in HASM.
+The [tests] folder contains some example programs written in HASM.
 Here's a Hello World program:
 
 ### Source code
@@ -133,7 +133,7 @@ run ROM
 ## Documentation
 
 The LaTeX documentations for both the command line arguments of the compiler
-and the assembly language are available in the docs folder.
+and the assembly language are available in the [docs] folder.
 
 ## License
 

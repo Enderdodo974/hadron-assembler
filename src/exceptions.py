@@ -6,16 +6,16 @@
 # This file lists all exceptions generated during assembling and compiling.
 # ---------------------------------------------------------------------------- #
 
-# ------------------------------------ #
+# -------------------------------------------------------- #
 # Libraries imports
 from logging import getLogger, Logger
 from typing import NoReturn
 
-# ------------------------------------ #
-# File imports
+# -------------------------------------------------------- #
+# Files imports
 from src.util import get_line
 
-# ------------------------------------ #
+# -------------------------------------------------------- #
 # Classes
 
 # Base exception for Assembly Errors
@@ -37,7 +37,7 @@ class PreprocessorError(AssemblyError):
     def __init__(self, message: str, errID: int = 0) -> None:
         super().__init__(message, errID)
 
-# ------------------------------------ #
+# -------------------------------------------------------- #
 # Functions
 
 # Exit function, just logs a message before exiting

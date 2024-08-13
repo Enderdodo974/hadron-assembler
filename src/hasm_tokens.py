@@ -7,14 +7,15 @@
 # meant to be used by the dedicated tokenizer.
 # ---------------------------------------------------------------------------- #
 
-# ------------------------------------ #
-# File imports
+# -------------------------------------------------------- #
+# Files imports
 import src.constants as c
 from src.exceptions import ParserError, warn
 
-# ------------------------------------ #
+# -------------------------------------------------------- #
 # Tokens
 
+# ---------------- #
 # Keywords
 keywords = {
     'bits': 'HEADER_BITS',
@@ -28,6 +29,7 @@ keywords = {
     'sp': 'SPE_REG_SP',
 }
 
+# ---------------- #
 # All tokens
 tokens = [
     # File tokens (end of file)
@@ -54,6 +56,7 @@ tokens = [
 # Ignore whitespaces, commas and tabulations
 t_ignore = ', \t'
 
+# ---------------- #
 # Simple tokens
 t_PERIOD       = r'\.'
 t_SEMI         = r';'
@@ -71,6 +74,7 @@ t_LE           = r'<='
 t_EQ           = r'=='
 t_GE           = r'>='
 
+# ---------------- #
 # Identifiers
 def t_IDENTIFIER(t):
     r'(?<!\d)[A-Za-z_][A-Za-z0-9_]*'
@@ -86,6 +90,7 @@ def t_IDENTIFIER(t):
     t.type = tokenType
     return t
 
+# ---------------- #
 # Newline
 def t_newline(t):
     r'\n+'
@@ -94,15 +99,18 @@ def t_newline(t):
     t.value = None
     return t
 
+# ---------------- #
 # Inline comments (dropped)
 def t_INLINE_COMMENT(t):
     r'//.*'
 
+# ---------------- #
 # Block comments (dropped)
 def t_BLOCK_COMMENT(t):
     r'/\*(?:.|\n)*?\*/'
     t.lexer.lineno += t.value.count('\n')
 
+# ---------------- #
 # Hexadecimal constant
 def t_HEX_LITERAL(t):
     r'(?i)0x\w*'
@@ -114,6 +122,7 @@ def t_HEX_LITERAL(t):
 
     return t
 
+# ---------------- #
 # Octal constant
 def t_OCT_LITERAL(t):
     r'(?i)0o\w*'
@@ -125,6 +134,7 @@ def t_OCT_LITERAL(t):
 
     return t
 
+# ---------------- #
 # Binary constant
 def t_BIN_LITERAL(t):
     r'(?i)0b\w*'
@@ -136,6 +146,7 @@ def t_BIN_LITERAL(t):
 
     return t
 
+# ---------------- #
 # Float constant
 def t_FLOAT_LITERAL(t):
     r'(?i)((?<!\w)\d\w*\.\w*[-\+]?\w*)|((?<!\w)\d\w*e[-\+]?\w+)|((?<!\w)\.\d\w*[-\+]?\w*)'
@@ -147,6 +158,7 @@ def t_FLOAT_LITERAL(t):
 
     return t
 
+# ---------------- #
 # Integer constant
 def t_INT_LITERAL(t):
     r'(?i)(?<!\w)\d\w*'
@@ -157,6 +169,7 @@ def t_INT_LITERAL(t):
 
     return t
 
+# ---------------- #
 # String constant
 def t_STRING_LITERAL(t):
     r'\"(?:(?:\\\")|(?:\\\n)|[^\"\n])*\"'
@@ -178,6 +191,7 @@ def t_STRING_LITERAL(t):
         t.value = t.value.replace(esc, c.ESCAPE_CODES[esc])
     return t
 
+# ---------------- #
 # Character constant
 def t_CHAR_LITERAL(t):
     r'\'(?:(?:\\.)|[^\\\n])\''
@@ -187,7 +201,8 @@ def t_CHAR_LITERAL(t):
         t.value = t.value.replace(esc, c.ESCAPE_CODES[esc])
     return t
 
-# Uncaught Errors handling
+# ---------------- #
+# Errors handling
 def t_error(t):
     # TODO: handle them
     raise ParserError('Illegal token')

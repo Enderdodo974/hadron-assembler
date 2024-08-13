@@ -7,18 +7,19 @@
 # instancing the HASMTokenizer and reading a source file.
 # ---------------------------------------------------------------------------- #
 
-# ------------------------------------ #
+# -------------------------------------------------------- #
 # Libraries imports
 import pathlib
 from ply import lex
 from logging import getLogger
 
-# ------------------------------------ #
+# -------------------------------------------------------- #
 # Files imports
 import src.hasm_tokens as hasm_tokens
 import src.constants as c
 from src.exceptions import ParserError, error
-# ------------------------------------ #
+
+# -------------------------------------------------------- #
 # Classes
 class HASMTokenizer:
     

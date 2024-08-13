@@ -15,7 +15,7 @@ from argparse import ArgumentParser, ArgumentError
 from typing import NoReturn
 
 # -------------------------------------------------------- #
-# File imports
+# Files imports
 import src.constants as c
 
 # -------------------------------------------------------- #
@@ -115,7 +115,7 @@ class WarningFilter(logging.Filter):
         # Get the global list of warnings
         warnings = logging.getLogger('assembler').warnings
         
-        # If it should be treated as an error
+        # If it should be treated as an error (-Werr)
         if c.WARNING_AS_ERRORS in warnings:
             record.levelno = logging.ERROR
             record.levelname = 'ERROR'

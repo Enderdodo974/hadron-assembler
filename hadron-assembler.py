@@ -4,12 +4,12 @@
 # ---------------------------------------------------------------------------- #
 # hadron-assembler.py
 # 
-# 
-# 
-# 
+# Assemble HASM (Hadron Assembly Language) source files into machine code and/or Minecraft schematics.
+# For more information, see the documentation at https://github.com/Enderdodo974/hadron-assembler
+# License: MIT
 # ---------------------------------------------------------------------------- #
 
-# ------------------------------------ #
+# -------------------------------------------------------- #
 # Libraries imports
 import pathlib
 import argparse
@@ -17,14 +17,14 @@ import logging
 import logging.config
 from json import load
 
-# ------------------------------------ #
+# -------------------------------------------------------- #
 # Files imports
 from src.tokenizer import HASMTokenizer
 from src.argument_parser import setup_CLI_args
 from src.util import CustomArgumentParser
 from src.exceptions import _exit
 
-# ------------------------------------ #
+# -------------------------------------------------------- #
 # Functions
 
 def setup_logging(config_file: pathlib.Path) -> logging.Logger:
@@ -45,7 +45,7 @@ def assemble(file: pathlib.Path, args: argparse.Namespace) -> ...:
     tokens = tokenizer.tokenize(file)
     
 
-# ------------------------------------ #
+# -------------------------------------------------------- #
 # Program entry point
 if __name__ == '__main__':
     
