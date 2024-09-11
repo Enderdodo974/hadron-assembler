@@ -146,7 +146,19 @@ def get_line(source: str, pos: int) -> tuple[str, int]:
     lineEnd   = source.find('\n', pos)
     pos = pos - lineStart
     
+    line = source[lineStart:lineEnd]
     if lineEnd == -1:
-        return (source[lineStart:], pos)
+        line = source[lineStart:]
+
+    if len(line) < 40:
+        return (line, pos)
     
-    return (source[lineStart:lineEnd], pos)
+    if pos < 40:
+        newLine = line[:41]
+        return (f'{newLine}...', pos)
+    elif pos > len(line) - 40:
+        newLine = line[-41:]
+        return (f'...{newLine}', pos - (len(line) - len(newLine)) + 3)
+    
+    newLine = line[pos - 20:pos + 21]
+    return (f'...{newLine}...', pos - 22)
