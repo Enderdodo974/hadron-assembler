@@ -38,15 +38,18 @@ tokens = [
     # Comments
     'INLINE_COMMENT', 'BLOCK_COMMENT',
     
-    # Delimiters end-of-line . ; : ~ % $ @ # ( ) [ ] { }
+    # Delimiters end-of-line . ; : ~ % $ @ # * ( ) [ ] { }
     'EOL', 'PERIOD', 'SEMI', 'COLON', 'TILDE', 'PLUS',
-    'MINUS', 'PERCENT', 'DOLLAR', 'AT', 'HASHTAG',
+    'MINUS', 'PERCENT', 'DOLLAR', 'AT', 'HASHTAG', 'STAR',
     # 'LPAREN',   'RPAREN',
     'LBRACKET', 'RBRACKET',
     # 'LBRACE',   'RBRACE',
     
     # Operators <= == >=
     'LE', 'EQ', 'GE',
+    
+    # Undefined value used in defined words and defined read-only words
+    'UNDEF_VALUE',
     
     # Literals (identifier, integer, hex, octal, binary, float, string, char)
     'IDENTIFIER', 'INST_IDENTIFIER', 'INT_LITERAL', 'HEX_LITERAL', 'OCT_LITERAL',
@@ -68,11 +71,13 @@ t_PERCENT      = r'\%'
 t_DOLLAR       = r'\$'
 t_AT           = r'\@'
 t_HASHTAG      = r'\#'
+t_STAR         = r'\*'
 t_LBRACKET     = r'\['
 t_RBRACKET     = r'\]'
 t_LE           = r'<='
 t_EQ           = r'=='
 t_GE           = r'>='
+t_UNDEF_VALUE  = r'_'
 
 # ---------------- #
 # Identifiers
